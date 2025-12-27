@@ -131,8 +131,8 @@ def resize_image_and_annotations(input_image_as_tensor, output_shape_as_hw, anno
     Given an input image (and optionally its annotations), resize it to the specified output
     dimension.
     """
-    resize_augmentation = K.augmentation.Resize(output_shape_as_hw, return_transform=True)
-    resized_input_tensor, transformation = resize_augmentation(input_image_as_tensor)
+    resize_augmentation = K.augmentation.Resize(output_shape_as_hw)
+    resized_input_tensor = resize_augmentation(input_image_as_tensor)
     resized_input_tensor = resized_input_tensor.squeeze()
     if annotations is None:
         return resized_input_tensor, None
@@ -141,7 +141,7 @@ def resize_image_and_annotations(input_image_as_tensor, output_shape_as_hw, anno
     )
     transformed_segmentations = apply_kornia_transformation_to_shapely_objects(
         segmentations_as_shapely_objects,
-        transformation,
+        resize_augmentation.transform_matrix,
         resized_input_tensor.shape[-2:],
     )
     transformed_annotations = merge_shapely_polygons_into_annotations(
@@ -154,10 +154,10 @@ def resize_pairimages_and_annotations(input_image1_as_tensor, input_image2_as_te
     Given an input image (and optionally its annotations), resize it to the specified output
     dimension.
     """
-    resize_augmentation = K.augmentation.Resize(output_shape_as_hw, return_transform=True)
-    resized_input1_tensor, transformation = resize_augmentation(input_image1_as_tensor)
+    resize_augmentation = K.augmentation.Resize(output_shape_as_hw)
+    resized_input1_tensor = resize_augmentation(input_image1_as_tensor)
     resized_input1_tensor = resized_input1_tensor.squeeze()
-    resized_input2_tensor, transformation = resize_augmentation(input_image2_as_tensor)
+    resized_input2_tensor = resize_augmentation(input_image2_as_tensor)
     resized_input2_tensor = resized_input2_tensor.squeeze()
 
     if annotations is None:
@@ -168,7 +168,7 @@ def resize_pairimages_and_annotations(input_image1_as_tensor, input_image2_as_te
     )
     transformed_segmentations = apply_kornia_transformation_to_shapely_objects(
         segmentations_as_shapely_objects,
-        transformation,
+        resize_augmentation.transform_matrix,
         resized_input1_tensor.shape[-2:],
     )
     transformed_annotations = merge_shapely_polygons_into_annotations(
@@ -182,9 +182,9 @@ def resize_image_and_mask(input_image_as_tensor, output_shape_as_hw, mask_annota
     Given an input image (and optionally its annotations), resize it to the specified output
     dimension.
     """
-    resize_augmentation = K.augmentation.Resize(output_shape_as_hw, return_transform=True)
-    resized_input_tensor, transformation = resize_augmentation(input_image_as_tensor)
-    resized_mask_tensor, transformation = resize_augmentation(mask_annotations.unsqueeze(0))
+    resize_augmentation = K.augmentation.Resize(output_shape_as_hw)
+    resized_input_tensor = resize_augmentation(input_image_as_tensor)
+    resized_mask_tensor = resize_augmentation(mask_annotations.unsqueeze(0))
 
     return resized_input_tensor.squeeze(0), resized_mask_tensor.squeeze(0)
 
@@ -194,18 +194,35 @@ def resize_pairimages_and_mask(input_image1_as_tensor, input_image2_as_tensor, o
     Given an input image (and optionally its annotations), resize it to the specified output
     dimension.
     """
-    resize_augmentation = K.augmentation.Resize(output_shape_as_hw, return_transform=True)
-    resized_input1_tensor, transformation = resize_augmentation(input_image1_as_tensor.unsqueeze(0))
+    # resize_augmentation = K.augmentation.Resize(output_shape_as_hw)
+    # resized_input1_tensor, transformation = resize_augmentation(input_image1_as_tensor.unsqueeze(0))
+    # if isinstance(input_image2_as_tensor, list):
+    #     resized_input2_tensor = []
+    #     for i in range(len(input_image2_as_tensor)):
+    #         resized_tensor, transformation = resize_augmentation(input_image2_as_tensor[i].unsqueeze(0))
+    #         resized_input2_tensor.append(resized_tensor.squeeze(0))
+    #     resized_mask_tensor, transformation = resize_augmentation(mask.unsqueeze(0))
+    #     return resized_input1_tensor.squeeze(0), resized_input2_tensor, resized_mask_tensor.squeeze(0)
+    # else:
+    #     resized_input2_tensor, transformation = resize_augmentation(input_image2_as_tensor.unsqueeze(0))
+    #
+    #     resized_mask_tensor, transformation = resize_augmentation(mask.unsqueeze(0))
+    #
+    #     return resized_input1_tensor.squeeze(0), resized_input2_tensor.squeeze(0), resized_mask_tensor.squeeze(0)
+
+    resize_augmentation = K.augmentation.Resize(output_shape_as_hw)
+    resized_input1_tensor = resize_augmentation(input_image1_as_tensor.unsqueeze(0))
     if isinstance(input_image2_as_tensor, list):
         resized_input2_tensor = []
         for i in range(len(input_image2_as_tensor)):
-            resized_tensor, transformation = resize_augmentation(input_image2_as_tensor[i].unsqueeze(0)) 
+            resized_tensor = resize_augmentation(input_image2_as_tensor[i].unsqueeze(0))
             resized_input2_tensor.append(resized_tensor.squeeze(0))
-        resized_mask_tensor, transformation = resize_augmentation(mask.unsqueeze(0))
+        resized_mask_tensor = resize_augmentation(mask.unsqueeze(0))
         return resized_input1_tensor.squeeze(0), resized_input2_tensor, resized_mask_tensor.squeeze(0)
     else:
-        resized_input2_tensor, transformation = resize_augmentation(input_image2_as_tensor.unsqueeze(0)) 
-    
-        resized_mask_tensor, transformation = resize_augmentation(mask.unsqueeze(0))
+        resized_input2_tensor = resize_augmentation(input_image2_as_tensor.unsqueeze(0))
+
+        resized_mask_tensor = resize_augmentation(mask.unsqueeze(0))
 
         return resized_input1_tensor.squeeze(0), resized_input2_tensor.squeeze(0), resized_mask_tensor.squeeze(0)
+

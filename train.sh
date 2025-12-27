@@ -1,0 +1,1 @@
+python3 train.py --gpus 1 --config_file configs/MetaUAS.yml --max_epochs 30 --experiment_name MetaUAS_Repeat_V2
