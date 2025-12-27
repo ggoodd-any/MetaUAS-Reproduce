@@ -1,0 +1,97 @@
+encoder_name: 'efficientnet-b4'
+decoder_name: 'unet'
+encoder_depth: 5
+decoder_depth: 5
+num_alignment_layers: 3
+alignment_type: 'sa'
+fusion_policy: 'cat'
+
+lr: 0.0001
+weight_decay: 0.0005
+batch_size: 128
+test_batch_size: 32
+num_dataloader_workers: 8
+
+datasets:
+  train_dataset:
+    name: coco_train
+    class: InpatinedCocoDataset
+    args:
+      path_to_dataset: /home/ggoodd/code/qh/Dataset/TheChangesYouWantToSee/coco_inpainted/train
+      split: "train"
+      method: "seg"
+      image_transformation: "affine"
+  val_dataset:
+    name: coco_val
+    class: InpatinedCocoDataset
+    args:
+      path_to_dataset: /home/ggoodd/code/qh/Dataset/TheChangesYouWantToSee/coco_inpainted/train
+      split: "val"
+      method: "seg"
+      image_transformation: "affine"
+  test_datasets:
+    - name: coco_test_small
+      class: InpatinedCocoDataset
+      args:
+        path_to_dataset: /home/ggoodd/code/qh/Dataset/TheChangesYouWantToSee/coco_inpainted/test/small
+        split: "test"
+        method: "seg"
+        image_transformation: "affine"
+    - name: coco_test_medium
+      class: InpatinedCocoDataset
+      args:
+        path_to_dataset: /home/ggoodd/code/qh/Dataset/TheChangesYouWantToSee/coco_inpainted/test/medium
+        split: "test"
+        method: "seg"
+        image_transformation: "affine"
+    - name: coco_test_large
+      class: InpatinedCocoDataset
+      args:
+        path_to_dataset: /home/ggoodd/code/qh/Dataset/TheChangesYouWantToSee/coco_inpainted/test/large
+        split: "test"
+        method: "seg"
+        image_transformation: "affine"
+#    - name: synthtext
+#      class: SynthTextDataset
+#      args:
+#        path_to_dataset: /home/ggoodd/code/qh/Dataset/TheChangesYouWantToSee/synthtext_change
+#        split: "test"
+#        method: "seg"
+#        image_transformation: "identity"
+#    - name: std
+#      class: StdDataset
+#      args:
+#        path_to_dataset: /home/ggoodd/code/qh/Dataset/TheChangesYouWantToSee/std
+#        split: "test"
+#        method: "seg"
+#        image_transformation: "identity"
+#    - name: kubric
+#      class: KubricChange
+#      args:
+#        path_to_dataset: /home/ggoodd/code/qh/Dataset/TheChangesYouWantToSee/kubric_change
+#        split: "test"
+#        method: "seg"
+#    - name: coco_test_all
+#      class: ConcatDataset
+#      datasets:
+#        - name: coco_test_small
+#          class: InpatinedCocoDataset
+#          args:
+#            path_to_dataset: /home/ggoodd/code/qh/Dataset/TheChangesYouWantToSee/coco_inpainted/test/small
+#            split: "test"
+#            method: "seg"
+#            image_transformation: "affine"
+#        - name: coco_test_medium
+#          class: InpatinedCocoDataset
+#          args:
+#            path_to_dataset: /home/ggoodd/code/qh/Dataset/TheChangesYouWantToSee/coco_inpainted/test/medium
+#            split: "test"
+#            method: "seg"
+#            image_transformation: "affine"
+#        - name: coco_test_large
+#          class: InpatinedCocoDataset
+#          args:
+#            path_to_dataset: /home/ggoodd/code/qh/Dataset/TheChangesYouWantToSee/coco_inpainted/test/large
+#            split: "test"
+#            method: "seg"
+#            image_transformation: "affine"
